@@ -1,0 +1,3 @@
+ip=$(grep 110.110.110.110 file.test)
+awk -F"[()]" '{print $2}' <<< "$ip"
+

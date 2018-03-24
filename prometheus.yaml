@@ -1,0 +1,19 @@
+# A scrape configuration scraping a Node Exporter and the Prometheus server
+# itself.
+global:
+  scrape_interval: 1s
+
+scrape_configs:
+  # Scrape Prometheus itself every 5 seconds.
+  - job_name: 'prometheus'
+    scrape_interval: 1s
+    static_configs:
+      - targets: ['localhost:9090']
+
+  # Scrape the Node Exporter every 5 seconds.
+  - job_name: 'node'
+    scrape_interval: 1s
+    metrics_path: /metrics
+
+    static_configs:
+      - targets: ['192.168.2.103:9100']

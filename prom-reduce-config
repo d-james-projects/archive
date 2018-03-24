@@ -1,0 +1,17 @@
+docker run -d -p 9100:9100 -v "/proc:/host/proc" -v "/sys:/host/sys" -v "/:/rootfs" --net="host" prom/node-exporter -collector.procfs /host/proc -collector.sysfs /host/proc -collector.filesystem.ignored-mount-points "^/(sys|proc|dev|host|etc)($|/)" -collectors.enabled="filesystem,loadavg,meminfo,netdev"
+
+curl localhost:9100/metrics
+
+label nodes for demonset to run node exporter - kubectl label node foobar node=no-stats
+
+sudo docker run -d -p 9090:9090 -v /home/david/:/etc/prometheus/ prom/prometheus -config.file=/etc/prometheus/prometheus.yaml -storage.local.path=/prometheus -storage.local.memory-chunks=10000
+
+docker run -d -p 9100:9100 -v "/proc:/host/proc" -v "/sys:/host/sys" -v "/:/rootfs" --net="host" prom/node-exporter -collector.procfs /host/proc -collector.sysfs /host/proc -collector.filesystem.ignored-mount-points "^/(sys|proc|dev|host|etc)($|/)" -collectors.enabled="filesystem,stat"
+
+docker run -d -p 9090:9090 --net="host" -v /home/david/:/etc/prometheus/ prom/prometheus -config.file=/etc/prometheus/prometheus.yaml -storage.local.path=/prometheus -storage.local.memory-chunks=10000
+
+time() - node_boot_time
+
+https://gist.github.com/bastman/5b57ddb3c11942094f8d0a97d461b430
+$ docker volume rm $(docker volume ls -qf dangling=true)
+$ docker volume ls -qf dangling=true | xargs -r docker volume rm

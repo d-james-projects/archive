@@ -1,0 +1,16 @@
+apiVersion: v1
+kind: Pod
+metadata:
+  name: selftest
+  labels:
+    name: selftest
+    app: selftest
+spec:
+  containers:
+  - image: busybox
+    command:
+      - sleep
+      - "3600"
+    name: busybox
+  nodeSelector:
+    selftest: "true"

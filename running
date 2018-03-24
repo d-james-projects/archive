@@ -1,0 +1,17 @@
+kubectl run -i --tty temp --image ubuntu:14.04
+apt-get update
+apt-get install -y curl ca-certificates amqp-tools python dnsutils
+# nslookup service-queue
+Server:         10.0.0.10
+Address:        10.0.0.10#53
+
+Name:   service-queue.default.svc.cluster.local
+Address: 10.0.0.44
+
+# export BROKER_URL=amqp://guest:guest@service-queue:5672
+# /usr/bin/amqp-consume --url=$BROKER_URL -q hello -c 1 cat && echo
+
+
+
+https://www.digitalocean.com/community/tutorials/how-to-remove-docker-images-containers-and-volumes
+

@@ -1,0 +1,14 @@
+apiVersion: v1
+kind: Service
+metadata:
+  name: selftest
+  labels:
+    app: selftest
+spec:
+  selector:
+    name: selftest
+  clusterIP: None
+  ports:
+    - name: foo # Actually, no port is needed.
+      port: 1234 
+      targetPort: 1234

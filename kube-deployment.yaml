@@ -1,0 +1,6 @@
+nodes:
+- name: 192.168.99.100
+  master: "true"
+- name: 8.8.8.8
+- name: minikube
+

@@ -1,0 +1,46 @@
+kind: Service
+apiVersion: v1
+metadata:
+  # Unique key of the Service instance
+  name: service-example
+spec:
+  ports:
+    - protocol: TCP
+      port: 80
+      targetPort: 80
+---
+kind: Endpoints
+apiVersion: v1
+metadata:
+  name: service-example
+subsets:
+  - addresses:
+      - ip: 52.207.58.147
+    ports:
+      - port: 80
+        protocol: TCP
+---
+apiVersion: v1
+kind: Service
+metadata:
+  labels:
+    component: test
+  name: service-queue
+spec:
+  ports:
+  - port: 5672
+    protocol: TCP
+    targetPort: 5672
+---
+kind: Endpoints
+apiVersion: v1
+metadata:
+  name: service-queue
+subsets:
+  - addresses:
+      - ip: 192.168.2.9
+    ports:
+      - port: 5672
+        protocol: TCP
+
+

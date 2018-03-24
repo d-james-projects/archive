@@ -1,0 +1,39 @@
+n this official document, it can run command in a yaml config file:
+
+http://kubernetes.io/v1.1/docs/user-guide/configuring-containers.html
+apiVersion: v1
+kind: Pod
+metadata:
+  name: hello-world
+spec:  # specification of the pod’s contents
+  restartPolicy: Never
+  containers:
+  - name: hello
+    image: "ubuntu:14.04"
+    env:
+    - name: MESSAGE
+      value: "hello world"
+    command: ["/bin/sh","-c"]
+    args: ["/bin/echo \"${MESSAGE}\""]
+If I want to run more than one command, how to do?
+
+
+accepted
+command: ["/bin/sh","-c"]
+args: ["command one; command two && command three"]
+Explanation: The command ["/bin/sh", "-c"] says "run a shell, and execute the following instructions". The args are then passed as commands to the shell. In shell scripting a semicolon separates commands, and && conditionally runs the following command if the first succeed. In the above example, it always runs command one followed by command two, and only runs command three if command two succeeded.
+
+Alternative: In many cases, some of the commands you want to run are probably setting up the final command to run. In this case, building your own Dockerfile is the way to go. Look at the RUN directive in particular.
+
+
+$ kubectl get ep -l name=sentinel -o=jsonpath={.items[].subsets[].addresses[*].ip}
+172.17.0.10 172.17.0.7 172.17.0.9
+
+$ kubectl get ep -l name=sentinel -o=jsonpath={.items[].subsets[].ports[].port}
+26379
+
+$ port=$(kubectl get ep -l name=sentinel -o=jsonpath={.items[].subsets[].ports[].port})
+$ kubectl get ep -l name=sentinel -o=jsonpath={.items[].subsets[].ports[].port}:$port
+
+
+
