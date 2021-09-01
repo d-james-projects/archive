@@ -18,14 +18,10 @@ apt-get update
 # Install docker if you don't have it already.
 apt-get install -y docker-engine
 apt-get install -y kubelet kubeadm kubectl kubernetes-cni
-
-
 netstat -r
-
 terminal 1 (99.99)
 ----------
 nc -l 1234
-
 terminal 2 (98.98)nc
 ----------
 nc 192.168.99.99
