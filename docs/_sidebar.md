@@ -5,5 +5,8 @@
 - [stedman](stedman.md)
 - [notes](notes.md)
 	- [kube](kubenotes.md)
-- [test]
+- test
 	- [weave](weave.md)
+	- [doc1](kubenotes.md)
+	- level2
+		- [doc2](stedman.md)
