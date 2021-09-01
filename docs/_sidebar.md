@@ -5,3 +5,5 @@
 - [stedman](stedman.md)
 - [notes](notes.md)
 	- [kube](kubenotes.md)
+- [test]
+	- [weave](weave.md)
