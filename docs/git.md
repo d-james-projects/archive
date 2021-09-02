@@ -1,30 +1,29 @@
-<setup git>
+## setup git
 
-git config --global user.name "John Doe"
-git config --global user.email johndoe@example.com
+    git config --global user.name "John Doe"
+    git config --global user.email johndoe@example.com
 (creates file ~/.gitconfig)
 
-cd working-dir
-git init
-git add *
-git status
-git commit
+    cd working-dir
+    git init
+    git add *
+    git status
+    git commit
 
-<login to github and create a repo>
+## login to github and create a repo
 
-git pull https://github.com/username/project-git master
-git remote add origin https://github.com/username/project-git
-git push -u origin master
+    git pull https://github.com/username/project-git master
+    git remote add origin https://github.com/username/project-git
+    git push -u origin master
 
-<reset origin/dump changes>
+## reset origin/dump changes
 
-git show origin
-git reset --hard origin
-git fetch
+    git show origin
+    git reset --hard origin
+    git fetch
 
-via Git clone
+!> **Important** Git clone this repository to your home directory:
 
-    Clone this repository to your home directory.
 	git clone https://github.com/magicmonty/bash-git-prompt.git ~/.bash-git-prompt --depth=1
 
 Add to the ~/.bashrc:
