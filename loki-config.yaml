@@ -1,0 +1,22 @@
+    storage_config:
+      aws:
+        # Note: use a fully qualified domain name, like localhost.
+        # full example: http://loki:supersecret@localhost.:9000
+        s3: http://minioadmin:minioadmin@192.168.2.222:9000
+        s3forcepathstyle: true
+      boltdb_shipper:
+        active_index_directory: /loki/boltdb-shipper-active
+        cache_location: /loki/boltdb-shipper-cache
+        cache_ttl: 24h         # Can be increased for faster performance over longer query periods, uses more disk space
+        shared_store: s3
+
+    schema_config:
+      configs:
+        - from: 2020-07-01
+          store: boltdb-shipper
+          object_store: aws
+          schema: v11
+          index:
+            prefix: index_
+            period: 24h
+
