@@ -14,8 +14,6 @@ data:
       filename: /run/promtail/positions.yaml
     server:
       http_listen_port: 3101
-    snippets:
-      extraScrapeConfigs: |
     target_config:
       sync_period: 10s
     scrape_configs:
@@ -24,15 +22,16 @@ data:
       journal:
         path: /tmp/journal
         max_age: 12h
+        json: false
         labels:
           job: systemd-journal
       relabel_configs:
-        - source_labels:
-            - '__journal__systemd_unit'
-          target_label: 'unit'
-        - source_labels:
-            - '__journal__hostname'
-          target_label: 'hostname'
+      - source_labels:
+        - '__journal__systemd_unit'
+        target_label: 'unit'
+      - source_labels:
+        - '__journal__hostname'
+        target_label: 'hostname'
     - job_name: kubernetes-pods-name
       pipeline_stages:
         - docker: {}
