@@ -5,18 +5,25 @@ sudo docker run --restart always --net=host -p 9000:9000 -p 9001:9001 -v /disks/
 
 !>check it is runnning ```nc -w 5 -v <ipaddr> 9001```
 
-# loki install k3d
+# install k3d
 ``` bash
-k3d cluster create mycluster -v /tmp/data:/tmp/data@server[0] -v /var/log/journal:/tmp/journal@server[0]
+k3d cluster create lokicluster -v /tmp/data:/tmp/data@server[0] -p "8081:80@loadbalancer"
+kubectl config use-context k3d-lokicluster
 ```
 
+# install loki stack
 ``` bash
-helm upgrade --install loki grafana/loki-stack  --set grafana.enabled=true,prometheus.enabled=true,prometheus.alertmanager.persistentVolume.enabled=false,prometheus.server.persistentVolume.enabled=false,loki.persistence.enabled=true,loki.persistence.storageClassName=local-path,loki.persistence.size=10Gi
-```
-``` bash
-helm upgrade loki grafana/loki-stack  --set grafana.enabled=true,prometheus.enabled=true,prometheus.alertmanager.persistentVolume.enabled=false,prometheus.server.persistentVolume.enabled=false,loki.persistence.enabled=true,loki.persistence.storageClassName=local-path,loki.persistence.size=10Gi -f values.yaml
+helm upgrade --install loki grafana/loki-stack  --set grafana.enabled=true,prometheus.enabled=true,prometheus.alertmanager.persistentVolume.enabled=false,prometheus.server.persistentVolume.enabled=false,loki.persistence.enabled=true,loki.persistence.storageClassName=local-path,loki.persistence.size=10Gi -f values.yaml
+
+kubectl get secret loki-grafana -o jsonpath="{.data.admin-password}" | base64 --decode ; echo
 ```
 
+# for grafana ui
+``` bash
+kubectl port-forward svc/loki-grafana 3000:80
+```
+
+# values for loki to read minio s3 store
 ``` yaml
 loki:
   enabled: true
@@ -45,19 +52,23 @@ loki:
             period: 24h
 ```
 
+
 ``` bash
 kubectl port-forward svc/loki-grafana 3000:80
 kubectl get secret loki-grafana -o jsonpath="{.data.admin-password}" | base64 --decode ; echo
 ``` 
+
+# run a docker promtail on a system and retrieve journal from systemd
 ``` bash
-docker run -d \
-  -v /var/log/journal/:/var/log/journal/ \
-  -v /run/log/journal/:/run/log/journal/ \
-  -v /etc/machine-id:/etc/machine-id \
-  grafana/promtail:latest \
-  -config.file=/home/david/gits/arch1/promtail-local-config.yaml
+docker run --rm --name promtail -ti --net=host \
+-v /var/log/journal/:/var/log/journal/ \
+-v /run/log/journal/:/run/log/journal/ \
+-v /etc/machine-id:/etc/machine-id \
+-v /home/david/gits/arch1/:/config \
+grafana/promtail:latest -config.file=/config/promtail-local-config.yaml
 ```
 
+# to access loki via ingress (and k3d lbalancer)
 ``` yaml
 # apiVersion: networking.k8s.io/v1beta1 # for k3s < v1.19
 apiVersion: networking.k8s.io/v1
@@ -79,3 +90,6 @@ spec:
               number: 3100
 ```
 
+``` bash
+kubectl create -f ingress.yaml
+```
