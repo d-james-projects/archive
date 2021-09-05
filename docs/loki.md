@@ -46,6 +46,36 @@ loki:
 ```
 
 ``` bash
+kubectl port-forward svc/loki-grafana 3000:80
 kubectl get secret loki-grafana -o jsonpath="{.data.admin-password}" | base64 --decode ; echo
 ``` 
+``` bash
+docker run -d \
+  -v /var/log/journal/:/var/log/journal/ \
+  -v /run/log/journal/:/run/log/journal/ \
+  -v /etc/machine-id:/etc/machine-id \
+  grafana/promtail:latest \
+  -config.file=/home/david/gits/arch1/promtail-local-config.yaml
+```
+
+``` yaml
+# apiVersion: networking.k8s.io/v1beta1 # for k3s < v1.19
+apiVersion: networking.k8s.io/v1
+kind: Ingress
+metadata:
+  name: loki
+  annotations:
+    ingress.kubernetes.io/ssl-redirect: "false"
+spec:
+  rules:
+  - http:
+      paths:
+      - path: /
+        pathType: Prefix
+        backend:
+          service:
+            name: loki
+            port:
+              number: 3100
+```
 
