@@ -7,6 +7,7 @@ sudo docker run --restart always --net=host -p 9000:9000 -p 9001:9001 -v /disks/
 
 # install k3d
 ``` bash
+mkdir /tmp/data
 k3d cluster create lokicluster -v /tmp/data:/tmp/data@server[0] -p "8081:80@loadbalancer"
 kubectl config use-context k3d-lokicluster
 ```
