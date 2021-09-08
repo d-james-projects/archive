@@ -2441,6 +2441,7 @@ spec:
           image: "grafana/loki:2.3.0"
           imagePullPolicy: IfNotPresent
           args:
+            - "-log.level=warn"
             - "-config.file=/etc/loki/loki.yaml"
           volumeMounts:
             - name: config
