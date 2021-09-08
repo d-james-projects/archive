@@ -1,28 +1,47 @@
 loki:
   enabled: true
   config:
+    ingester:
+      lifecycler:
+        address: 127.0.0.1
+        ring:
+          kvstore:
+            store: inmemory
+          replication_factor: 1
+        final_sleep: 0s
+      chunk_idle_period: 5m
+      chunk_retain_period: 30s
+
+    schema_config:
+      configs:
+      - from: 2020-05-15
+        store: boltdb-shipper
+        object_store: s3
+        schema: v11
+        index:
+          prefix: index_
+          period: 24h
+
     storage_config:
-      aws:
-        # Note: use a fully qualified domain name, like localhost.
-        # full example: http://loki:supersecret@localhost.:9000
-        #s3: http://user:password@192.168.2.222:9000
-        s3: s3://user:password@192.168.2.222:9000/test
-        s3forcepathstyle: true
       boltdb_shipper:
         active_index_directory: /data/loki/boltdb-shipper-active
         cache_location: /data/loki/boltdb-shipper-cache
         cache_ttl: 24h         # Can be increased for faster performance over longer query periods, uses more disk space
         shared_store: s3
 
-    schema_config:
-      configs:
-        - from: 2020-07-01
-          store: boltdb-shipper
-          object_store: aws
-          schema: v11
-          index:
-            prefix: index_
-            period: 24h
+      aws:
+        s3: s3://user:password@192.168.2.222:9000/lokitesting
+        s3forcepathstyle: true
+
+    limits_config:
+      enforce_metric_name: false
+      reject_old_samples: true
+      reject_old_samples_max_age: 168h
+
+    compactor:
+      working_directory: /data/compactor
+      shared_store: s3
+      compaction_interval: 5m
     
 promtail:
   enabled: true
@@ -43,51 +62,7 @@ prometheus:
 
 filebeat:
   enabled: false
-  filebeatConfig:
-    filebeat.yml: |
-      # logging.level: debug
-      filebeat.inputs:
-      - type: container
-        paths:
-          - /var/log/containers/*.log
-        processors:
-        - add_kubernetes_metadata:
-            host: ${NODE_NAME}
-            matchers:
-            - logs_path:
-                logs_path: "/var/log/containers/"
-      output.logstash:
-        hosts: ["logstash-loki:5044"]
 
 logstash:
   enabled: false
-  image: grafana/logstash-output-loki
-  imageTag: 1.0.1
-  filters:
-    main: |-
-      filter {
-        if [kubernetes] {
-          mutate {
-            add_field => {
-              "container_name" => "%{[kubernetes][container][name]}"
-              "namespace" => "%{[kubernetes][namespace]}"
-              "pod" => "%{[kubernetes][pod][name]}"
-            }
-            replace => { "host" => "%{[kubernetes][node][name]}"}
-          }
-        }
-        mutate {
-          remove_field => ["tags"]
-        }
-      }
-  outputs:
-    main: |-
-      output {
-        loki {
-          url => "http://loki:3100/loki/api/v1/push"
-          #username => "test"
-          #password => "test"
-        }
-        # stdout { codec => rubydebug }
-      }
 
