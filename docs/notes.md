@@ -87,5 +87,9 @@ kemble   80.0  1030  1120  1330  1440
 >>> plt.plot(t['s3'],t['dist'])
 [<matplotlib.lines.Line2D object at 0x7fefa175c790>]
 >>> plt.show()
+
+
+t = pd.read_csv("/home/david/local/timetable.csv",index_col=0, header=None)
+
 ```
 
