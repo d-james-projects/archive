@@ -1,3 +1,4 @@
+# setup
 # setup minio
 ``` bash
 sudo docker run --restart always --net=host -p 9000:9000 -p 9001:9001 -v /disks/1:/data --name minio -d quay.io/minio/minio server /data --console-address ":9001"
@@ -16,7 +17,11 @@ kubectl config use-context k3d-lokicluster
 ```
 
 # install loki stack
-?> **Tip** using local ephemeral storage but can enable persistent stores ```loki.persistence.enabled=true,loki.persistence.storageClassName=local-path,loki.persistence.size=10Gi```
+?> **Tip** using local ephemeral storage but can enable persistent stores 
+  ```loki.persistence.enabled=true,
+  loki.persistence.storageClassName=local-path,
+  loki.persistence.size=10Gi
+  ```
 
 !> **warning** compactor is used here so do not run more than one replica at a time
 

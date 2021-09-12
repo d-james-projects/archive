@@ -2,6 +2,8 @@
 
 - [Home](/)
 - [git](git.md)
-- [stedman](stedman.md)
+- [loki](loki.md)
 - [kube](kubenotes.md)
 OTHER
+    -[stedman](stedman.md)
+    -[grandsire](g11.md)
