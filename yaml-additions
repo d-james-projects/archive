@@ -1,0 +1,22 @@
+          args:
+            - "-config.expand-env=true"
+            - "-config.file=/etc/loki/loki.yaml"
+            - "-log.level=warn"
+            #- "-print-config-stderr=true"
+          env:
+          - name: ACCESS_KEY_ID
+            valueFrom:
+              secretKeyRef:
+                name: s3-creds
+                key: access_key_id
+          - name: SECRET_ACCESS_KEY
+            valueFrom:
+              secretKeyRef:
+                name: s3-creds
+                key: secret_access_key
+
+kubectl create secret generic s3-creds \
+  --from-literal=access_key_id=user \
+  --from-literal=secret_access_key=password
+
+

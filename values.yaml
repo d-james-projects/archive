@@ -1,4 +1,6 @@
 loki:
+  image:
+    tag: 2.3.0  
   enabled: true
   config:
     ingester:
@@ -30,8 +32,15 @@ loki:
         shared_store: s3
 
       aws:
-        s3: s3://user:password@192.168.2.222:9000/lokitesting
+        #s3: s3://user:password@192.168.2.222:9000/lokitesting
         s3forcepathstyle: true
+        bucketnames: lokitesting
+        endpoint: 192.168.2.222:9000
+        insecure: true
+        access_key_id: ${ACCESS_KEY_ID}
+        secret_access_key: ${SECRET_ACCESS_KEY}
+        #access_key_id: user
+        #secret_access_key: password
 
     limits_config:
       enforce_metric_name: false
@@ -45,6 +54,8 @@ loki:
     
 promtail:
   enabled: true
+  image:
+    tag: 2.3.0
 
 fluent-bit:
   enabled: false
