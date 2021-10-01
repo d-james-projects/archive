@@ -181,6 +181,14 @@ compactor:
   retention_delete_worker_count: 10
 ```
 
+# client
+``` bash
+docker run -it --entrypoint=/bin/sh --net=host minio/mc
+mc alias set minio http://192.168.2.222:9000 user password
+cat /root/.mc/config.json 
+mc ls minio
+mc ls minio/lokitesting
+```
 # run a docker promtail on a system and retrieve journal from systemd
 ``` bash
 docker run --rm --name promtail -ti --net=host \
