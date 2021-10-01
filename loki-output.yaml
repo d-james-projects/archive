@@ -1862,6 +1862,7 @@ spec:
           args:
             - "-config.file=/etc/promtail/promtail.yaml"
             - "-client.url=http://loki:3100/loki/api/v1/push"
+            - "-log.level=debug"
           volumeMounts:
             - name: config
               mountPath: /etc/promtail
@@ -2409,7 +2410,7 @@ metadata:
     {}
 spec:
   podManagementPolicy: OrderedReady
-  replicas: 1
+  replicas: 1 
   selector:
     matchLabels:
       app: loki
@@ -2443,8 +2444,7 @@ spec:
           args:
             - "-config.expand-env=true"
             - "-config.file=/etc/loki/loki.yaml"
-            - "-log.level=warn"
-            #- "-print-config-stderr=true"
+            - "-log.level=debug"
           env:
           - name: ACCESS_KEY_ID
             valueFrom:
@@ -2475,7 +2475,7 @@ spec:
             httpGet:
               path: /ready
               port: http-metrics
-            initialDelaySeconds: 45
+            initialDelaySeconds: 300
           resources:
             {}
           securityContext:
@@ -2491,8 +2491,20 @@ spec:
         - name: config
           secret:
             secretName: loki
-        - name: storage
-          emptyDir: {}
+  volumeClaimTemplates:
+  - metadata:
+      annotations: {}
+      labels:
+        app: loki
+        name: loki
+        release: loki        
+      name: storage
+    spec:
+      accessModes:
+      - ReadWriteOnce
+      resources:
+        requests:
+          storage: 10Gi
 ---
 # Source: loki-stack/charts/grafana/templates/tests/test.yaml
 apiVersion: v1
@@ -2556,3 +2568,118 @@ spec:
   - name: tests
     configMap:
       name: loki-loki-stack-test
+---
+apiVersion: apps/v1
+kind: Deployment
+metadata:
+  name: loki-compactor
+  namespace: default
+  labels:
+    app: loki-compactor
+    chart: loki-2.5.0
+    release: loki
+    heritage: Helm
+  annotations:
+    {}
+spec:
+  replicas: 0
+  selector:
+    matchLabels:
+      app: loki-compactor
+      release: loki
+  template:
+    metadata:
+      labels:
+        app: loki-compactor
+        name: loki
+        release: loki
+      annotations:
+        prometheus.io/port: http-metrics
+        prometheus.io/scrape: "true"
+    spec:
+      securityContext:
+        fsGroup: 10001
+        runAsGroup: 10001
+        runAsNonRoot: true
+        runAsUser: 10001
+      initContainers:
+        []
+      containers:
+        - name: loki
+          image: "grafana/loki:2.3.0"
+          imagePullPolicy: IfNotPresent
+          args:
+            - "-config.expand-env=true"
+            - "-config.file=/etc/loki/loki.yaml"
+            - "-target=compactor"
+          env:
+          - name: ACCESS_KEY_ID
+            valueFrom:
+              secretKeyRef:
+                name: s3-creds
+                key: access_key_id
+          - name: SECRET_ACCESS_KEY
+            valueFrom:
+              secretKeyRef:
+                name: s3-creds
+                key: secret_access_key
+          volumeMounts:
+            - name: config
+              mountPath: /etc/loki
+            - name: storage
+              mountPath: "/data"
+              subPath: 
+          ports:
+            - name: http-metrics
+              containerPort: 3100
+              protocol: TCP
+          livenessProbe:
+            httpGet:
+              path: /ready
+              port: http-metrics
+            initialDelaySeconds: 45
+          readinessProbe:
+            httpGet:
+              path: /ready
+              port: http-metrics
+            initialDelaySeconds: 45
+          resources:
+            {}
+          securityContext:
+            readOnlyRootFilesystem: true
+      nodeSelector:
+        {}
+      affinity:
+        {}
+      tolerations:
+        []
+      terminationGracePeriodSeconds: 4800
+      volumes:
+        - name: config
+          secret:
+            secretName: loki
+        - name: storage
+          emptyDir: {}
+---
+apiVersion: v1
+kind: Service
+metadata:
+  name: loki-compactor
+  namespace: default
+  labels:
+    app: loki-compactor
+    chart: loki-2.5.0
+    release: loki
+    heritage: Helm
+  annotations:
+    {}
+spec:
+  type: ClusterIP
+  ports:
+    - port: 3100
+      protocol: TCP
+      name: http-metrics
+      targetPort: http-metrics
+  selector:
+    app: loki-compactor
+    release: loki

@@ -19,4 +19,62 @@ kubectl create secret generic s3-creds \
   --from-literal=access_key_id=user \
   --from-literal=secret_access_key=password
 
+auth_enabled: false
+chunk_store_config:
+  max_look_back_period: 0s
+ingester:
+  chunk_block_size: 262144
+  chunk_idle_period: 5m
+  chunk_retain_period: 30s
+  lifecycler:
+    address: 127.0.0.1
+    final_sleep: 0s
+    ring:
+      kvstore:
+        store: inmemory
+      replication_factor: 1
+  max_transfer_retries: 0
+limits_config:
+  enforce_metric_name: false
+  reject_old_samples: true
+  reject_old_samples_max_age: 168h
+  retention_period: 24h
+schema_config:
+  configs:
+  - from: "2020-05-15"
+    index:
+      period: 24h
+      prefix: index_
+    object_store: s3
+    schema: v11
+    store: boltdb-shipper
+server:
+  http_listen_port: 3100
+storage_config:
+  aws:
+    access_key_id: ${ACCESS_KEY_ID}
+    bucketnames: lokitesting
+    endpoint: 192.168.2.222:9000
+    insecure: true
+    s3forcepathstyle: true
+    secret_access_key: ${SECRET_ACCESS_KEY}
+  boltdb_shipper:
+    active_index_directory: /data/loki/boltdb-shipper-active
+    cache_location: /data/loki/boltdb-shipper-cache
+    cache_ttl: 24h
+    shared_store: s3
+  filesystem:
+    directory: /data/loki/chunks
+table_manager:
+  retention_deletes_enabled: false
+  retention_period: 0s
+compactor:
+  compaction_interval: 5m
+  shared_store: s3
+  working_directory: /data/compactor
+  retention_enabled: true
+  retention_delete_delay: 1h
+  retention_delete_worker_count: 10
+
+
 
