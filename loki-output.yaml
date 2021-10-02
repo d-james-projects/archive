@@ -2462,6 +2462,8 @@ spec:
             - name: storage
               mountPath: "/data"
               subPath: 
+            - name: tmp
+              mountPath: "/tmp"
           ports:
             - name: http-metrics
               containerPort: 3100
@@ -2490,21 +2492,11 @@ spec:
       volumes:
         - name: config
           secret:
-            secretName: loki
-  volumeClaimTemplates:
-  - metadata:
-      annotations: {}
-      labels:
-        app: loki
-        name: loki
-        release: loki        
-      name: storage
-    spec:
-      accessModes:
-      - ReadWriteOnce
-      resources:
-        requests:
-          storage: 10Gi
+            secretName: loki-v4
+        - name: storage
+          emptyDir: {}
+        - name: tmp
+          emptyDir: {}
 ---
 # Source: loki-stack/charts/grafana/templates/tests/test.yaml
 apiVersion: v1
