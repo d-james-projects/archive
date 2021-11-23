@@ -31,6 +31,63 @@ net-conf.json: |
                 }
 ```
 
+for dhcp on internal net
 VBoxManage dhcpserver add –netname intnet –ip 10.13.13.100 –netmask 255.255.255.0 –lowerip 10.13.13.101 –upperip 10.13.13.254 –enable
 
+using /etc/network/interfaces for static ip 192.168.1.1 and 1.2
+enp0s8:
+
 intnet <- internal network type vbox
+
+starting with
+``` json
+  net-conf.json: |
+    {
+      "Network": "10.244.0.0/16",
+      "Backend": {
+        "Type": "host-gw"
+      }
+    }
+```
+``` yaml
+      containers:
+      - name: kube-flannel
+        image: quay.io/coreos/flannel:v0.15.1
+        command:
+        - /opt/bin/flanneld
+        args:
+        - --ip-masq
+        - --kube-subnet-mgr
+        - --iface=enp0s8
+```
+
+edit configmap
+restart pods
+
+``` bash
+kubectl edit cm -n kube-system kube-flannel-cfg
+kubectl delete pods -n kube-system -l app=flannel
+```
+canal.yaml
+will need to set CALICO_IPV4POOL_CIDR
+
+``` bash
+kubectl apply -f canal.yaml
+```
+
+The geeky details of what you get:
+
+Policy
+Calico
+IPAM
+Host-local
+CNI
+Calico
+Overlay
+VXLAN
+Routing
+Static
+Datastore
+Kubernetes
+
+IPAM -> calico?
