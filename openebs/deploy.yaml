@@ -1,0 +1,39 @@
+  apiVersion: apps/v1
+  kind: Deployment
+  metadata:
+    name: busybox
+    labels:
+      app: busybox
+  spec:
+    replicas: 1
+    strategy:
+      type: RollingUpdate
+    selector:
+      matchLabels:
+        app: busybox
+    template:
+      metadata:
+        labels:
+          app: busybox
+      spec:
+        containers:
+        - resources:
+            limits:
+              cpu: 0.5
+          name: busybox
+          image: busybox
+          command:
+            - sh
+            - -c
+            - 'while true; do echo "`date` [`hostname`] Hello from OpenEBS Local PV." >> /mnt/store/echo.txt; wc /mnt/store/echo.txt; sleep $(($RANDOM % 5 + 300)); done'
+          imagePullPolicy: IfNotPresent
+          ports:
+          - containerPort: 3306
+            name: busybox
+          volumeMounts:
+          - mountPath: /mnt/store
+            name: demo-vol1
+        volumes:
+        - name: demo-vol1
+          persistentVolumeClaim:
+            claimName: example-jiva-csi-pvc
