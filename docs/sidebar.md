@@ -4,6 +4,7 @@
 - [git](git.md)
 - [loki](loki.md)
 - [kube](kubenotes.md)
+- [openebs](openebs.md)
 - Ringing
   - [stedman](stedman.md)
   - [grandsire](g11.md)

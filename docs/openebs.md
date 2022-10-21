@@ -28,7 +28,7 @@ kubectl create -f openebs-lite-sc.yaml
 kubectl get sc
 kubectl get all -n openebs
 ```
-?> **Help** samples of user created yaml can be found in this [repo](https://github.com/d-james-projects/archive/openebs/)
+?> **Help** samples of user created yaml can be found in this [repo](https://github.com/d-james-projects/archive/tree/master/openebs)
 # create some policy and storage class for jiva
 ``` bash
 vim jiva-policy.yaml
