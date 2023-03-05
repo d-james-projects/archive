@@ -5,6 +5,7 @@
 - [loki](loki.md)
 - [kube](kubenotes.md)
 - [openebs](openebs.md)
+- [storage](storage.md)
 - Ringing
   - [stedman](stedman.md)
   - [grandsire](g11.md)
